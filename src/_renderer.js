@@ -75,6 +75,34 @@ ipc.once("getKbOverride", (e, layout) => {
 });
 ipc.send("getKbOverride");
 
+let closingAnimationDone = false;
+window.onbeforeunload = (e) => {
+    if (closingAnimationDone) {
+        return
+    } else {
+        closingAnimation().then(() => {
+            closingAnimationDone = true;
+            window.close();
+        })
+        return false;
+    }
+}
+
+function closingAnimation() {
+    return new Promise(resolve => {
+        const sections = document.querySelectorAll('section');
+        for (let i = 0; i < sections.length; i++) {
+            const section = sections[i];
+            if (section.id === 'main_shell') {
+                section.style.width = 0;
+                section.style.height = 0;
+            } else {
+                section.style.opacity = 0;
+            }
+        }
+        setTimeout(resolve, 2000);
+    })
+}
 // Load UI theme
 window._loadTheme = theme => {
 
